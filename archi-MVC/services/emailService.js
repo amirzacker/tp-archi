@@ -23,6 +23,7 @@ const sendConfirmationEmail = async (data) => {
     name: "Restaurant Reservation System",
     email: process.env.BREVO_USER,
   };
+
   sendSmtpEmail.to = [{ email, name }];
   sendSmtpEmail.subject = "Reservation Payment Confirmation";
   sendSmtpEmail.htmlContent = `
@@ -39,7 +40,6 @@ const sendConfirmationEmail = async (data) => {
       <li>Transaction ID: ${transaction_id}</li>
     </ul>
   `;
-
   // Send the email
   await apiInstance.sendTransacEmail(sendSmtpEmail);
 };

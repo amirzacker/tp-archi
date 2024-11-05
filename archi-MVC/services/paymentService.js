@@ -4,8 +4,15 @@ const Payment = require("../models/paymentModel");
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 const createCheckoutSession = async (data) => {
-  const { token, name, email, restaurantId, reservationDate, numberOfGuests } =
-    data;
+  const {
+    token,
+    name,
+    email,
+    restaurantId,
+    reservationDate,
+    numberOfGuests,
+    totalPrix,
+  } = data;
 
   // Create a JWT containing reservation details
   const reservationDataJwt = jwt.sign(
@@ -23,7 +30,7 @@ const createCheckoutSession = async (data) => {
           product_data: {
             name: "Reservation Payment",
           },
-          unit_amount: 5000, // Example: €50 reservation fee
+          unit_amount: totalPrix * 100,
         },
         quantity: 1,
       },

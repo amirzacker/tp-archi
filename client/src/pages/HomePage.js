@@ -4,7 +4,7 @@ import CheckoutForm from '../components/CheckoutForm';
 const HomePage = () => {
   return (
     <div>
-      <h1>Luxury Car Rental</h1>
+      <h1> Restaurant Volonte Paradis</h1>
       <CheckoutForm />
     </div>
   );

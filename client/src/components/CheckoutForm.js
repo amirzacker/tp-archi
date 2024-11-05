@@ -10,19 +10,25 @@ import api from "../api";
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
-const CheckoutForm = () => {
+const ReservationForm = () => {
   const [formData, setFormData] = useState({
     nom: "",
-    prenom: "",
-    anneeNaissance: "", // Champ pour l'année de naissance
-    ville: "",
-    vehicule: "",
+    email: "",
+    telephone: "",
+    dateReservation: "",
+    heureReservation: "",
+    nombrePersonnes: "",
+    message: "",
     token: "",
   });
 
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
+  const prixParPersonne = 20;
+  const totalPrix = formData.nombrePersonnes
+    ? formData.nombrePersonnes * prixParPersonne
+    : 0;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,24 +41,38 @@ const CheckoutForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { nom, prenom, anneeNaissance, ville, vehicule } = formData;
+    const {
+      nom,
+      email,
+      telephone,
+      dateReservation,
+      heureReservation,
+      nombrePersonnes,
+      message,
+    } = formData;
 
-    // Vérifie si tous les champs obligatoires sont remplis
-    if (!nom || !prenom || !anneeNaissance || !ville || !vehicule) {
+    if (
+      !nom ||
+      !email ||
+      !telephone ||
+      !dateReservation ||
+      !heureReservation ||
+      !nombrePersonnes
+    ) {
       alert("Veuillez remplir tous les champs obligatoires.");
       return;
     }
 
-    // Calcule l'âge à partir de l'année de naissance
-    const age = new Date().getFullYear() - parseInt(anneeNaissance);
-
     try {
       const response = await api.post("/create-checkout-session", {
         nom,
-        prenom,
-        age, // Utilise l'âge calculé
-        ville,
-        vehicule,
+        email,
+        telephone,
+        dateReservation,
+        heureReservation,
+        nombrePersonnes,
+        message,
+        totalPrix,
         token: process.env.APPUP_TOKEN,
       });
 
@@ -60,11 +80,11 @@ const CheckoutForm = () => {
       const { error } = await stripe.redirectToCheckout({ sessionId });
 
       if (error) {
-        console.error("Error redirecting to checkout:", error);
+        console.error("Erreur lors de la redirection vers le paiement :", error);
         navigate("/failure");
       }
     } catch (error) {
-      console.error("Error creating checkout session:", error);
+      console.error("Erreur lors de la création de la session de paiement :", error);
       navigate("/failure");
     }
   };
@@ -80,56 +100,62 @@ const CheckoutForm = () => {
         required
       />
       <input
-        type="text"
-        name="prenom"
-        value={formData.prenom}
+        type="email"
+        name="email"
+        value={formData.email}
         onChange={handleChange}
-        placeholder="Prénom"
+        placeholder="Email"
+        required
+      />
+      <input
+        type="tel"
+        name="telephone"
+        value={formData.telephone}
+        onChange={handleChange}
+        placeholder="Téléphone"
+        required
+      />
+      <input
+        type="date"
+        name="dateReservation"
+        value={formData.dateReservation}
+        onChange={handleChange}
+        required
+      />
+      <input
+        type="time"
+        name="heureReservation"
+        value={formData.heureReservation}
+        onChange={handleChange}
         required
       />
       <input
         type="number"
-        name="anneeNaissance" // Champ pour l'année de naissance
-        value={formData.anneeNaissance}
+        name="nombrePersonnes"
+        value={formData.nombrePersonnes}
         onChange={handleChange}
-        placeholder="Année de naissance"
+        placeholder="Nombre de personnes"
         required
       />
-      <select
-        name="ville"
-        value={formData.ville}
+      <p>Prix par personne : ${prixParPersonne}</p>
+      <p>Prix total : ${totalPrix}</p>
+      <textarea
+        name="message"
+        value={formData.message}
         onChange={handleChange}
-        required
-      >
-        <option value="">Ville de location</option>
-        <option value="Paris">Paris</option>
-        <option value="Lyon">Lyon</option>
-        <option value="Marseille">Marseille</option>
-      </select>
-      <select
-        name="vehicule"
-        value={formData.vehicule}
-        onChange={handleChange}
-        required
-      >
-        <option value="">Véhicule à louer</option>
-        <option value="Aston Martin">Aston Martin</option>
-        <option value="Bentley">Bentley</option>
-        <option value="Cadillac">Cadillac</option>
-        <option value="Ferrari">Ferrari</option>
-        <option value="Jaguar">Jaguar</option>
-      </select>
+        placeholder="Message (optionnel)"
+      />
       <button type="submit" disabled={!stripe || !elements}>
-        Payer
+        Réserver
       </button>
     </form>
   );
 };
 
-const WrappedCheckoutForm = () => (
+const WrappedReservationForm = () => (
   <Elements stripe={stripePromise}>
-    <CheckoutForm />
+    <ReservationForm />
   </Elements>
 );
 
-export default WrappedCheckoutForm;
+export default WrappedReservationForm;

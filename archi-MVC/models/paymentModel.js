@@ -1,18 +1,18 @@
-const mongoose = require("mongoose");
+const { Schema, model } = require("mongoose");
 
-const PaymentSchema = new mongoose.Schema({
-  name: String,
-  email: String,
+const PaymentSchema = new Schema({
   restaurantId: String,
   reservationDate: Date,
   numberOfGuests: Number,
   amount: Number,
   transactionId: String,
   paymentStatus: String,
-  createdAt: {
-    type: Date,
-    default: Date.now,
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    autopopulate: true
   },
-});
+}, { timestamps: true });
 
-module.exports = mongoose.model("Payment", PaymentSchema);
+PaymentSchema.plugin(require('mongoose-autopopulate'));
+module.exports = model("Payment", PaymentSchema);

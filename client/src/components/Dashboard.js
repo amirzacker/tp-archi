@@ -45,10 +45,10 @@ const Dashboard = () => {
       <ul>
         {payments.map((payment) => (
           <li key={payment.id}>
-            <Link to={`/payment/${payment.id}`}>
+            <Link to={`/payment/${payment._id}`}>
               {getPaymentStatusIcon(payment.status)}{" "}
               {/* Affichage de l'icône en fonction de l'état du paiement */}
-              {payment.metadata.nom} {payment.metadata.prenom} -{" "}
+              {payment.metadata.name} {payment.metadata.prenom} -{" "}
               {payment.amount_total / 100}€
             </Link>
           </li>
