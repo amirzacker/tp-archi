@@ -1,12 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
-import {
-  Elements,
-  useStripe,
-  useElements,
-} from "@stripe/react-stripe-js";
+import { Elements, useStripe, useElements } from "@stripe/react-stripe-js";
 import api from "../api";
+import "./form.css";
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
@@ -80,11 +77,17 @@ const ReservationForm = () => {
       const { error } = await stripe.redirectToCheckout({ sessionId });
 
       if (error) {
-        console.error("Erreur lors de la redirection vers le paiement :", error);
+        console.error(
+          "Erreur lors de la redirection vers le paiement :",
+          error
+        );
         navigate("/failure");
       }
     } catch (error) {
-      console.error("Erreur lors de la création de la session de paiement :", error);
+      console.error(
+        "Erreur lors de la création de la session de paiement :",
+        error
+      );
       navigate("/failure");
     }
   };
